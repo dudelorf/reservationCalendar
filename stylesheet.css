@@ -1,0 +1,63 @@
+#calendarHeader
+{
+	height: 80px;
+	width: 714px;
+	background-color:teal;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	text-align: center;
+}
+#rightArrow
+{
+	width: 5%;
+	height: 50%;
+	display:inline-block;
+}
+#headerInfo
+{
+	margin: 0px;
+	display:inline-block;
+}
+#leftArrow
+{
+	width: 5%;
+	height: 50%;
+	display:inline-block;
+
+}
+#dayOfWeekDisplay
+{
+	display: inline-block;
+}
+.dayDisplay
+{
+	width:102px;
+	float: left;
+	color: silver;
+	text-align: center;
+}
+#calendarDisplay
+{
+	width: 714px;
+}
+.thisMonthDate
+{
+	border: 1px solid black;
+	width: 100px;
+	height: 75px;
+	background-color: white;
+	float:left;
+	font-size: 15px;
+	font-family: arial;
+	
+}
+.otherMonthDate
+{
+	border: 1px solid black;
+	width: 100px;
+	height: 75px;
+	background-color: silver;
+	float: left;
+	font-size: 15px;
+	font-family:arial;
+}

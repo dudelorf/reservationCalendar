@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<script type="text/javascript">
+	var selectedDate;
+	function openReservationForm(aCalendarDate)
+	{
+		document.getElementById("welcomeText").style.display = "none";
+		document.getElementById("appointmentForm").style.display = "block";
+		document.getElementById("appointmentFormDateInfo").innerHTML = 
+			("Make appointment for " + aCalendarDate.getSelfDate().toDateString());
+		selectedDate = aCalendarDate;
+	}
+	function makeAppointment()
+	{
+		if (document.getElementById("appointmentName").value == "")
+		{
+			alert("Please enter a name for your appointment.");
+			return;
+		}
+		//creates new appointment and adds it to book
+		var apptName = document.getElementById("appointmentName").value;
+		var appt = new Appointment(apptName, selectedDate.getSelfDate());
+		window.parent.getAppointmentBook().addAppointment(appt);
+
+		//updates visible appointments
+		var liElem = document.createElement("li");
+		liElem.appendChild(document.createTextNode(apptName));
+		selectedDate.apptList.appendChild(liElem);
+
+		//clears form and resets window
+		document.getElementById("appointmentForm").style.display = "none";
+		document.getElementById("welcomeText").style.display = "block";
+		document.getElementById("appointmentName").value = "";
+	}
+	function Appointment(aName, aDate)
+		{
+			//object to hold appointment information
+			this.aptName = aName;
+			this.aptMonth = aDate.getMonth();
+			this.aptDate = aDate.getDate();
+
+			Appointment.prototype.getApptDate = function()
+			{
+				return (this.aptMonth + "-" + this.aptDate);
+			}
+			Appointment.prototype.getApptName = function()
+			{
+				return this.aptName;
+			}
+		}
+	</script>
+</head>
+<body>
+	<h1 id="welcomeText">Please click on a date to make an appointment.</h1>
+	<form id="appointmentForm" style="display:none">
+		<h1 id="appointmentFormDateInfo" style="font-size:15px"></h1><br />
+		<label>Your Name: <input type="text" id="appointmentName" /> </label>
+		<input type="button" value="Make Appointment" onclick="makeAppointment()" />
+	</form>
+</body>
+</html>

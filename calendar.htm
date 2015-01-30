@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Reservation calendar</title>
+	<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+	<script type="text/javascript">
+		function getRows(currentDate)
+		//return the number of calendar rows in the month for the date supplied
+		{
+			
+			var startOfMonth = firstDayOfMonth(currentDate);
+			var numDaysInMonth = getDaysInMonth(currentDate);
+
+			if (currentDate.getMonth() == 1 && startOfMonth == 0 && numDaysInMonth == 28)
+			{
+				return 4;
+			}
+
+			if((startOfMonth == 6 && numDaysInMonth >= 30) || (startOfMonth == 5 && numDaysInMonth == 31))
+			{
+				return 6;
+			}
+
+			return 5;
+		}
+
+		function getDaysInMonth(aDate)
+		//finds number of days in month
+		{
+			var today = aDate.getDate();
+			aDate.setDate(1);
+			aDate.setMonth(aDate.getMonth() + 1);
+			aDate.setDate(aDate.getDate() - 1);
+			var daysInMonth = aDate.getDate();
+			aDate.setDate(today);
+			return daysInMonth;
+		}
+
+		function firstDayOfMonth(aDate)
+		//returns the day value for the first day of the month for a supplied date
+		{
+			var today = aDate.getDate();
+			aDate.setDate(1);
+			var firstOfMonth = aDate.getDay();
+			aDate.setDate(today);
+			return firstOfMonth;
+		}
+
+		function CalendarDate(aDate)
+		{
+			var cBox = document.createElement("div");
+			cBox.appendChild(document.createTextNode(aDate.getDate()));
+
+			var listOfAppts = document.createElement("ul");
+			var existingAppts = window.parent.getAppointmentBook().getAppointments(aDate);
+			if (existingAppts != null)
+			{
+				for (var a = 0; a < existingAppts.length; a++)
+				{
+					var apptName = existingAppts[a].getApptName();
+					var liElem = document.createElement("li");
+					liElem.appendChild(document.createTextNode(apptName));
+					listOfAppts.appendChild(liElem);
+				}
+			}
+
+			this.apptList = listOfAppts;
+			cBox.appendChild(listOfAppts);
+			this.displayElement = cBox;
+
+			this.displayElement.addEventListener("click", this, false)
+
+			CalendarDate.prototype.click = function(e)
+			{
+				//function to initialize creation of a reservation
+				window.parent.reservationForm.openReservationForm(this);
+			}
+
+			CalendarDate.prototype.handleEvent = function(e)
+			{
+				switch (e.type)
+				{
+					case "click": this.click(e);
+				}
+			}
+
+			this.selfDate = new Date(aDate.getFullYear(), aDate.getMonth(), aDate.getDate());
+
+			CalendarDate.prototype.getSelfDate = function()
+			{
+				return this.selfDate;
+			}
+			
+
+		}
+
+		function displayCalendar(aDate)
+		//builds a calendar of the month for the supplied date
+		{
+			//calendar display formatting information
+			var numRows = getRows(aDate);
+
+			//temporary date object to build calendar
+			var monthStart = firstDayOfMonth(aDate);
+			var workingDate = new Date(aDate.getFullYear(), aDate.getMonth());
+			workingDate.setDate(1);
+			workingDate.setDate(workingDate.getDate() - monthStart);
+
+			//builds calendar display
+			for (var r = 0; r < numRows; r++)
+			{
+				var rowDiv = document.createElement("div");
+
+				for (var d = 0; d < 7 /*days in week */; d++)
+				{
+					var displayBox = new CalendarDate(workingDate);
+
+					if(workingDate.getMonth() != window.parent.supplyDate().getMonth())
+					{
+						displayBox.displayElement.className = "otherMonthDate";
+					}
+					else
+					{
+						displayBox.displayElement.className = "thisMonthDate";
+					}
+
+					rowDiv.appendChild(displayBox.displayElement);
+					workingDate.setDate(workingDate.getDate() + 1);
+				}
+				document.getElementById("calendarDisplay").appendChild(rowDiv);
+			}
+
+		}
+
+		function monthToString(monthNum)
+		//takes an integer and returns string of month name
+		{
+			switch (monthNum)
+			{
+				case 0:
+				return "January";
+				case 1:
+				return "February";
+				case 2:
+				return "March";
+				case 3:
+				return "April";
+				case 4:
+				return "May";
+				case 5:
+				return "June";
+				case 6:
+				return "July";
+				case 7:
+				return "August";
+				case 8:
+				return "September";
+				case 9:
+				return "October";
+				case 10:
+				return "November";
+				case 11:
+				return "December";
+			}
+		}
+
+		function window_onload()
+		{
+			var displayDate = window.parent.supplyDate();
+			displayCalendar(displayDate);
+			var dateString = monthToString(displayDate.getMonth()) + ", " + displayDate.getFullYear();
+			document.getElementById("headerInfo").innerHTML = dateString;
+		}
+		
+		function arrowRight_onclick()
+		{
+			window.parent.nextMonth();
+		}
+
+		function arrowLeft_onclick()
+		{
+			window.parent.previousMonth();
+		}
+	</script>
+</head>
+<body onload="window_onload()" >
+	<div id="calendar">
+		<div id="calendarHeader">
+			<div id="calendarNavigation">
+				<img id="leftArrow" src="leftArrow.png" onclick="arrowLeft_onclick()"/>
+				<h2 id="headerInfo"></h2>
+				<img id="rightArrow" src="rightArrow.png" onclick="arrowRight_onclick()" />
+			</div>
+			<div id="dayOfWeekDisplay">
+				<div class="dayDisplay">Sunday</div>
+				<div class="dayDisplay">Monday</div>
+				<div class="dayDisplay">Tuesday</div>
+				<div class="dayDisplay">Wednesday</div>
+				<div class="dayDisplay">Thursday</div>
+				<div class="dayDisplay">Friday</div>
+				<div class="dayDisplay">Saturday</div>
+			</div>
+		</div>
+		<div id="calendarDisplay">
+		</div>
+	</div>
+</body>
+</html>
