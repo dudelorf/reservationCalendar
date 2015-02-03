@@ -1,3 +1,16 @@
+#widgetWindow
+{
+	padding: 2px;
+	border: 2px solid black;
+	width: 931px;
+	height: 465px;
+}
+
+#calendar
+{
+	float: left;
+}
+
 #calendarHeader
 {
 	height: 80px;
@@ -15,6 +28,7 @@
 }
 #headerInfo
 {
+	width: 100px;
 	margin: 0px;
 	display:inline-block;
 }
@@ -36,6 +50,7 @@
 	color: silver;
 	text-align: center;
 }
+
 #calendarDisplay
 {
 	width: 714px;
@@ -60,4 +75,15 @@
 	float: left;
 	font-size: 15px;
 	font-family:arial;
+}
+
+#interactionWindow
+{
+	width:200px;
+	height:463px;
+	background-color: teal;
+	border: 1px solid silver;
+	border-radius: 5px;
+	margin-left: 15px;
+	float: left;
 }

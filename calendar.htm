@@ -4,6 +4,10 @@
 	<title>Reservation calendar</title>
 	<link rel="stylesheet" type="text/css" href="stylesheet.css" />
 	<script type="text/javascript">
+		var theDate = new Date();
+		theDate.setDate(1);
+		var appointments = new AppointmentBook();
+
 		function getRows(currentDate)
 		//return the number of calendar rows in the month for the date supplied
 		{
@@ -47,12 +51,15 @@
 		}
 
 		function CalendarDate(aDate)
+		//Calendar date object constructor
 		{
 			var cBox = document.createElement("div");
 			cBox.appendChild(document.createTextNode(aDate.getDate()));
 
 			var listOfAppts = document.createElement("ul");
-			var existingAppts = window.parent.getAppointmentBook().getAppointments(aDate);
+			var existingAppts = appointments.getAppointments(aDate);
+
+			//adds elements to list of appointments
 			if (existingAppts != null)
 			{
 				for (var a = 0; a < existingAppts.length; a++)
@@ -73,7 +80,7 @@
 			CalendarDate.prototype.click = function(e)
 			{
 				//function to initialize creation of a reservation
-				window.parent.reservationForm.openReservationForm(this);
+				makeAppointment(this.selfDate);
 			}
 
 			CalendarDate.prototype.handleEvent = function(e)
@@ -90,8 +97,6 @@
 			{
 				return this.selfDate;
 			}
-			
-
 		}
 
 		function displayCalendar(aDate)
@@ -107,7 +112,7 @@
 			workingDate.setDate(workingDate.getDate() - monthStart);
 
 			//builds calendar display
-			for (var r = 0; r < numRows; r++)
+			for (var r = 0; r < 5; r++)
 			{
 				var rowDiv = document.createElement("div");
 
@@ -115,7 +120,7 @@
 				{
 					var displayBox = new CalendarDate(workingDate);
 
-					if(workingDate.getMonth() != window.parent.supplyDate().getMonth())
+					if(workingDate.getMonth() != theDate.getMonth())
 					{
 						displayBox.displayElement.className = "otherMonthDate";
 					}
@@ -163,45 +168,155 @@
 				return "December";
 			}
 		}
-
-		function window_onload()
-		{
-			var displayDate = window.parent.supplyDate();
-			displayCalendar(displayDate);
-			var dateString = monthToString(displayDate.getMonth()) + ", " + displayDate.getFullYear();
-			document.getElementById("headerInfo").innerHTML = dateString;
-		}
 		
 		function arrowRight_onclick()
 		{
-			window.parent.nextMonth();
+			nextMonth();
 		}
 
 		function arrowLeft_onclick()
 		{
-			window.parent.previousMonth();
+			previousMonth();
 		}
+		
+		function AppointmentBook()
+		//constructor for AppointmentBook object
+		{
+			AppointmentBook.prototype.addAppointment = function(appt)
+			{
+				var resDate = appt.getApptDate();
+				if (this[resDate] == undefined)
+				{
+					this[resDate] = new Array();
+					this[resDate][this[resDate].length] = appt;
+				}
+				else
+				{
+					this[resDate][this[resDate].length] = appt;
+				}
+			}
+			AppointmentBook.prototype.getAppointments = function(aDate)
+			//if appointments exist for a supllied date, returns an array of Appointments
+			//otherwise returns null
+			{
+				var resDate = (aDate.getMonth() + "-" + aDate.getDate())
+				if (this[resDate] == undefined)
+				{
+					return null;
+				}
+				else
+				{
+					return this[resDate];
+				}
+			}
+		}
+
+		function buildDisplay()
+		{
+			displayCalendar(theDate);
+			var dateString = monthToString(theDate.getMonth()) + ", " + theDate.getFullYear();
+			document.getElementById("headerInfo").innerHTML = dateString;
+		}
+
+		function nextMonth()
+		{	
+			theDate.setMonth(theDate.getMonth() + 1);
+			document.getElementById("calendarDisplay").innerHTML = "";
+			buildDisplay();
+			
+		}
+
+		function previousMonth()
+		{
+			theDate.setMonth(theDate.getMonth() - 1);
+			document.getElementById("calendarDisplay").innerHTML = "";
+			buildDisplay();
+		}
+
+		function openReservationForm(aCalendarDate)
+		//Open reservation form to make appointment for selected date
+		{
+		document.getElementById("welcomeText").style.display = "none";
+		document.getElementById("appointmentForm").style.display = "block";
+		document.getElementById("appointmentFormDateInfo").innerHTML = 
+			("Make appointment for " + aCalendarDate.getSelfDate().toDateString());
+		selectedDate = aCalendarDate;
+		}
+
+		function makeAppointment(selectedDate)
+		{
+			if (document.getElementById("appointmentName").value == "")
+			{
+				alert("Please enter a name for your appointment.");
+				return;
+			}
+			//creates new appointment and adds it to book
+			var apptName = document.getElementById("appointmentName").value;
+			var appt = new Appointment(apptName, selectedDate.getSelfDate());
+			appointments.addAppointment(appt);
+
+			//updates visible appointments
+			var liElem = document.createElement("li");
+			liElem.appendChild(document.createTextNode(apptName));
+			selectedDate.apptList.appendChild(liElem);
+
+			//clears form and resets window
+			document.getElementById("appointmentForm").style.display = "none";
+			document.getElementById("welcomeText").style.display = "block";
+			document.getElementById("appointmentName").value = "";
+		}
+		function Appointment(aName, aDate)
+		{
+			//object to hold appointment information
+			this.aptName = aName;
+			this.aptMonth = aDate.getMonth();
+			this.aptDate = aDate.getDate();
+
+			Appointment.prototype.getApptDate = function()
+			{
+				return (this.aptMonth + "-" + this.aptDate);
+			}
+			Appointment.prototype.getApptName = function()
+			{
+					return this.aptName;
+			}
+		}
+
+		function window_onload()
+			{
+				buildDisplay();
+			}
 	</script>
 </head>
 <body onload="window_onload()" >
-	<div id="calendar">
-		<div id="calendarHeader">
-			<div id="calendarNavigation">
-				<img id="leftArrow" src="leftArrow.png" onclick="arrowLeft_onclick()"/>
-				<h2 id="headerInfo"></h2>
-				<img id="rightArrow" src="rightArrow.png" onclick="arrowRight_onclick()" />
+	<div id="widgetWindow">
+		<div id="calendar">
+			<div id="calendarHeader">
+				<div id="calendarNavigation">
+					<img id="leftArrow" src="leftArrow.png" onclick="arrowLeft_onclick()"/>
+					<h2 id="headerInfo"></h2>
+					<img id="rightArrow" src="rightArrow.png" onclick="arrowRight_onclick()" />
+				</div>
+				<div id="dayOfWeekDisplay">
+					<div class="dayDisplay">Sunday</div>
+					<div class="dayDisplay">Monday</div>
+					<div class="dayDisplay">Tuesday</div>
+					<div class="dayDisplay">Wednesday</div>
+					<div class="dayDisplay">Thursday</div>
+					<div class="dayDisplay">Friday</div>
+					<div class="dayDisplay">Saturday</div>
+				</div>
 			</div>
-			<div id="dayOfWeekDisplay">
-				<div class="dayDisplay">Sunday</div>
-				<div class="dayDisplay">Monday</div>
-				<div class="dayDisplay">Tuesday</div>
-				<div class="dayDisplay">Wednesday</div>
-				<div class="dayDisplay">Thursday</div>
-				<div class="dayDisplay">Friday</div>
-				<div class="dayDisplay">Saturday</div>
+			<div id="calendarDisplay">
 			</div>
 		</div>
-		<div id="calendarDisplay">
+		<div id="interactionWindow">
+			<h1 id="interactionText">Please click on a date to make an appointment.</h1>
+			<form id="appointmentForm" style="display:none">
+				<h1 id="appointmentFormDateInfo" style="font-size:15px"></h1><br />
+				<label>Your Name: <input type="text" id="appointmentName" /> </label>
+				<input type="button" value="Make Appointment" onclick="makeAppointment()" />
+			</form>
 		</div>
 	</div>
 </body>
