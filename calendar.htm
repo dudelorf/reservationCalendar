@@ -4,9 +4,14 @@
 	<title>Reservation calendar</title>
 	<link rel="stylesheet" type="text/css" href="stylesheet.css" />
 	<script type="text/javascript">
+
+		//global variables
+		//records current display date
 		var theDate = new Date();
-		theDate.setDate(1);
+		//Holds scheduled appointments
 		var appointments = new AppointmentBook();
+		//records currently selected date
+		var selectedDate = null;
 
 		function getRows(currentDate)
 		//return the number of calendar rows in the month for the date supplied
@@ -100,16 +105,13 @@
 		}
 
 		function displayCalendar(aDate)
-		//builds a calendar of the month for the supplied date
+		//builds a calendar from the supplied date
 		{
-			//calendar display formatting information
-			var numRows = getRows(aDate);
 
 			//temporary date object to build calendar
-			var monthStart = firstDayOfMonth(aDate);
-			var workingDate = new Date(aDate.getFullYear(), aDate.getMonth());
-			workingDate.setDate(1);
-			workingDate.setDate(workingDate.getDate() - monthStart);
+			var workingDate = new Date(aDate.getFullYear(), aDate.getMonth(), aDate.getDate());
+			//sets date to first day of week
+			workingDate.setDate(workingDate.getDate() - workingDate.getDay());
 
 			//builds calendar display
 			for (var r = 0; r < 5; r++)
@@ -178,6 +180,20 @@
 		{
 			previousMonth();
 		}
+
+		function arrowRightWeek_onclick()
+		{
+			//increase the week by 1
+			theDate.setDate(theDate.getDate() + 7);
+			buildDisplay();
+		}
+
+		function arrowLeftWeek_onclick()
+		{
+			//decrease week by 1
+			theDate.setDate(theDate.getDate() - 7);
+			buildDisplay();
+		}
 		
 		function AppointmentBook()
 		//constructor for AppointmentBook object
@@ -213,6 +229,7 @@
 
 		function buildDisplay()
 		{
+			document.getElementById("calendarDisplay").innerHTML = "";
 			displayCalendar(theDate);
 			var dateString = monthToString(theDate.getMonth()) + ", " + theDate.getFullYear();
 			document.getElementById("headerInfo").innerHTML = dateString;
@@ -221,7 +238,7 @@
 		function nextMonth()
 		{	
 			theDate.setMonth(theDate.getMonth() + 1);
-			document.getElementById("calendarDisplay").innerHTML = "";
+			theDate.setDate(1);
 			buildDisplay();
 			
 		}
@@ -229,7 +246,7 @@
 		function previousMonth()
 		{
 			theDate.setMonth(theDate.getMonth() - 1);
-			document.getElementById("calendarDisplay").innerHTML = "";
+			theDate.setDate(1);
 			buildDisplay();
 		}
 
@@ -283,9 +300,11 @@
 		}
 
 		function window_onload()
-			{
-				buildDisplay();
-			}
+		//initalization code
+		{
+			theDate.setDate(1);
+			buildDisplay();
+		}
 	</script>
 </head>
 <body onload="window_onload()" >
@@ -293,9 +312,11 @@
 		<div id="calendar">
 			<div id="calendarHeader">
 				<div id="calendarNavigation">
-					<img id="leftArrow" src="leftArrow.png" onclick="arrowLeft_onclick()"/>
+					<img id="leftArrow" src="leftArrow.png" class="arrowButton" onclick="arrowLeft_onclick()"/>
+					<img it="leftArrowWeek" src="leftArrow.png" class="arrowButton" onclick="arrowLeftWeek_onclick()" />
 					<h2 id="headerInfo"></h2>
-					<img id="rightArrow" src="rightArrow.png" onclick="arrowRight_onclick()" />
+					<img id="rightArrowWeek" src="rightArrow.png" class="arrowButton" onclick="arrowRightWeek_onclick()" />
+					<img id="rightArrow" src="rightArrow.png" class="arrowButton" onclick="arrowRight_onclick()" />
 				</div>
 				<div id="dayOfWeekDisplay">
 					<div class="dayDisplay">Sunday</div>
@@ -312,6 +333,7 @@
 		</div>
 		<div id="interactionWindow">
 			<h1 id="interactionText">Please click on a date to make an appointment.</h1>
+			<div id="dateView" style="overflow:auto"></div>
 			<form id="appointmentForm" style="display:none">
 				<h1 id="appointmentFormDateInfo" style="font-size:15px"></h1><br />
 				<label>Your Name: <input type="text" id="appointmentName" /> </label>

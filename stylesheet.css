@@ -1,8 +1,9 @@
 #widgetWindow
 {
+  background-color:orange;
 	padding: 2px;
 	border: 2px solid black;
-	width: 931px;
+	width: 920px;
 	height: 465px;
 }
 
@@ -20,7 +21,7 @@
 	border-top-right-radius: 5px;
 	text-align: center;
 }
-#rightArrow
+.arrowButton
 {
 	width: 5%;
 	height: 50%;
@@ -32,13 +33,7 @@
 	margin: 0px;
 	display:inline-block;
 }
-#leftArrow
-{
-	width: 5%;
-	height: 50%;
-	display:inline-block;
 
-}
 #dayOfWeekDisplay
 {
 	display: inline-block;
@@ -71,7 +66,7 @@
 	border: 1px solid black;
 	width: 100px;
 	height: 75px;
-	background-color: silver;
+	background-color: #F0F0F5;
 	float: left;
 	font-size: 15px;
 	font-family:arial;
@@ -84,6 +79,21 @@
 	background-color: teal;
 	border: 1px solid silver;
 	border-radius: 5px;
-	margin-left: 15px;
+	margin-left: 4px;
 	float: left;
+}
+
+#interactionText
+{
+	text-align: center;
+ 	font-size: 20px;
+}
+#dateView
+{
+	width:190px;
+	height:300px;
+	overflow: auto;
+	background-color: white;
+	border: 1px solid black;
+ 	 margin:auto;
 }
