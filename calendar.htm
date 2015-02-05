@@ -3,6 +3,7 @@
 <head>
 	<title>Reservation calendar</title>
 	<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+	<script type="text/javascript" src="jquery-1.11.2.js"></script>
 	<script type="text/javascript">
 
 		//global variables
@@ -58,6 +59,8 @@
 		function CalendarDate(aDate)
 		//Calendar date object constructor
 		{
+
+			this.selfDate = new Date(aDate.getFullYear(), aDate.getMonth(), aDate.getDate());
 			var cBox = document.createElement("div");
 			cBox.appendChild(document.createTextNode(aDate.getDate()));
 
@@ -85,7 +88,8 @@
 			CalendarDate.prototype.click = function(e)
 			{
 				//function to initialize creation of a reservation
-				makeAppointment(this.selfDate);
+				selectedDate = this.selfDate;
+				showDateInfo(selectedDate);
 			}
 
 			CalendarDate.prototype.handleEvent = function(e)
@@ -95,8 +99,6 @@
 					case "click": this.click(e);
 				}
 			}
-
-			this.selfDate = new Date(aDate.getFullYear(), aDate.getMonth(), aDate.getDate());
 
 			CalendarDate.prototype.getSelfDate = function()
 			{
@@ -194,6 +196,17 @@
 			theDate.setDate(theDate.getDate() - 7);
 			buildDisplay();
 		}
+
+		function showDateInfo(aDate)
+		{
+
+			document.getElementById("interactionText").innerHTML = (monthToString(aDate.getMonth()) + ", " + aDate.getDate() + " " + aDate.getFullYear());
+			var dayAppointments = appointments.getAppointments(aDate);
+			if (dayAppointments == null)
+			{
+				$("#dateView").text("No appointments yet.");
+			}
+		}
 		
 		function AppointmentBook()
 		//constructor for AppointmentBook object
@@ -250,38 +263,20 @@
 			buildDisplay();
 		}
 
-		function openReservationForm(aCalendarDate)
-		//Open reservation form to make appointment for selected date
+		function openAppointmentWindow()
+		//Open appointment form window
 		{
-		document.getElementById("welcomeText").style.display = "none";
-		document.getElementById("appointmentForm").style.display = "block";
-		document.getElementById("appointmentFormDateInfo").innerHTML = 
-			("Make appointment for " + aCalendarDate.getSelfDate().toDateString());
-		selectedDate = aCalendarDate;
+			$("#appointmentWindow").fadeIn(500);
 		}
 
-		function makeAppointment(selectedDate)
+		function makeAppointment()
 		{
-			if (document.getElementById("appointmentName").value == "")
-			{
-				alert("Please enter a name for your appointment.");
-				return;
-			}
-			//creates new appointment and adds it to book
-			var apptName = document.getElementById("appointmentName").value;
-			var appt = new Appointment(apptName, selectedDate.getSelfDate());
-			appointments.addAppointment(appt);
-
-			//updates visible appointments
-			var liElem = document.createElement("li");
-			liElem.appendChild(document.createTextNode(apptName));
-			selectedDate.apptList.appendChild(liElem);
-
-			//clears form and resets window
-			document.getElementById("appointmentForm").style.display = "none";
-			document.getElementById("welcomeText").style.display = "block";
-			document.getElementById("appointmentName").value = "";
+			var newAppt = new Appointment(document.getElementById("appointmentName").value, selectedDate);
+			appointments.addAppointment(newAppt);
+			$("#appointmentWindow").fadeOut(300);
+			buildDisplay();
 		}
+
 		function Appointment(aName, aDate)
 		{
 			//object to hold appointment information
@@ -293,9 +288,10 @@
 			{
 				return (this.aptMonth + "-" + this.aptDate);
 			}
+
 			Appointment.prototype.getApptName = function()
 			{
-					return this.aptName;
+				return this.aptName;
 			}
 		}
 
@@ -304,7 +300,10 @@
 		{
 			theDate.setDate(1);
 			buildDisplay();
+
 		}
+
+
 	</script>
 </head>
 <body onload="window_onload()" >
@@ -332,14 +331,16 @@
 			</div>
 		</div>
 		<div id="interactionWindow">
-			<h1 id="interactionText">Please click on a date to make an appointment.</h1>
+			<h1 id="interactionText">Select a Date.</h1>
 			<div id="dateView" style="overflow:auto"></div>
-			<form id="appointmentForm" style="display:none">
-				<h1 id="appointmentFormDateInfo" style="font-size:15px"></h1><br />
-				<label>Your Name: <input type="text" id="appointmentName" /> </label>
-				<input type="button" value="Make Appointment" onclick="makeAppointment()" />
-			</form>
+			<input type="button" value="New Appointment" onclick="openAppointmentWindow()" style="margin-left:30px"/>
 		</div>
+		<div id="appointmentWindow">
+		<form id="appointmentForm">
+			<label>Your Name: <input type="text" id="appointmentName" /> </label>
+			<input type="button" value="Make Appointment" onclick="makeAppointment()" />
+		</form>
+	</div>
 	</div>
 </body>
 </html>
