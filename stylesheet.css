@@ -95,7 +95,28 @@
 	overflow: auto;
 	background-color: white;
 	border: 1px solid black;
- 	 margin:auto;
+ 	margin:auto;
+ 	overflow: auto;
+}
+.appointmentDisplayBox
+{
+	width:144px;
+	height:50px;
+	margin-top: -16px;
+	margin-left: 20px;
+	border-bottom: 1px solid gray;
+}
+.emptyDate
+{
+	font-family : sans-serif;
+}
+.hasAppointments
+{
+
+}
+.selectAppointment
+{
+	background-color: orange;
 }
 #appointmentForm
 {

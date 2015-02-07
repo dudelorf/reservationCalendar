@@ -13,6 +13,8 @@
 		var appointments = new AppointmentBook();
 		//records currently selected date
 		var selectedDate = null;
+		//records currently selected appointment
+		var selectedAppointment = null;
 
 	//object  constructors
 		function AppointmentBook()
@@ -31,11 +33,47 @@
 					this[resDate][this[resDate].length] = appt;
 				}
 			}
+			AppointmentBook.prototype.removeAppointment = function(anAppointment)
+			//removes supplied appointment from book
+			{
+				if (selectedAppointment == null)
+				{
+					alert("Please select an appointment to remove");
+				}
+				else
+				{
+					var dayAppts = this.getAppointments(anAppointment.getApptDate());
+					for (var a = 0; a < dayAppts.length; a++)
+					{
+						if (dayAppts[a].getApptNum() == anAppointment.getApptNum())
+						{
+							dayAppts.splice(a,1);
+							if (dayAppts.length == 0)
+							{
+								delete this[anAppointment.getApptDate()];
+								buildDisplay();
+							}
+							showDateInfo(selectedDate);
+							return;
+						}
+					}
+				}
+			}
+
 			AppointmentBook.prototype.getAppointments = function(aDate)
 			//if appointments exist for a supllied date, returns an array of Appointments
 			//otherwise returns null
 			{
-				var resDate = (aDate.getMonth() + "-" + aDate.getDate())
+				var resDate
+				if (typeof(aDate) == "string")
+				{
+					resDate = aDate;
+				}
+				else
+				{
+					resDate = (aDate.getMonth() + "-" + aDate.getDate())
+				}
+
 				if (this[resDate] == undefined)
 				{
 					return null;
@@ -54,12 +92,45 @@
 			this.aptName = aName;
 			this.aptMonth = aDate.getMonth();
 			this.aptDate = aDate.getDate();
+			this.aptNumber = generateAptNum(aName);
+
+			var dBox = document.createElement("div");
+			dBox.className = "appointmentDisplayBox";
+			var theText = document.createElement("p");
+			theText.appendChild(document.createTextNode(this.aptName));
+			dBox.appendChild(theText);
+			this.displayBox = dBox;
+			this.displayBox.addEventListener("click", this, false);
+
+			Appointment.prototype.handleEvent = function(e)
+			{
+
+				switch (e.type)
+				{
+					case "click": this.click(e);
+				}
+			}
+
+			Appointment.prototype.click = function()
+			{
+				selectedAppointment = this;
+				$(this.displayBox).toggleClass("selectAppointment");
+			}
+
+			Appointment.prototype.getAppointmentBox = function()
+			{
+				return this.displayBox;
+			}
 
 			Appointment.prototype.getApptDate = function()
 			{
 				return (this.aptMonth + "-" + this.aptDate);
 			}
 
+			Appointment.prototype.getApptNum = function()
+			{
+				return this.aptNumber;
+			}
 			Appointment.prototype.getApptName = function()
 			{
 				return this.aptName;
@@ -71,16 +142,15 @@
 		{
 
 			this.selfDate = new Date(aDate.getFullYear(), aDate.getMonth(), aDate.getDate());
+
 			var cBox = document.createElement("div");
 			cBox.appendChild(document.createTextNode(aDate.getDate()));
-
 			if (appointments.getAppointments(aDate) != null)
 			{
 				cBox.appendChild(document.createTextNode("Appts."));
 			}
 
 			this.displayElement = cBox;
-
 			this.displayElement.addEventListener("click", this, false)
 
 			CalendarDate.prototype.click = function(e)
@@ -105,24 +175,16 @@
 		}
 
 	//calendar utility functions
-		function getRows(currentDate)
-		//return the number of calendar rows in the month for the date supplied
+		function generateAptNum(aName)
+		//creates a unique appointment number
 		{
-			
-			var startOfMonth = firstDayOfMonth(currentDate);
-			var numDaysInMonth = getDaysInMonth(currentDate);
-
-			if (currentDate.getMonth() == 1 && startOfMonth == 0 && numDaysInMonth == 28)
+			var theAptNum = 0;
+			for (var c = 0; c < aName.length; c++)
 			{
-				return 4;
+				theAptNum += parseInt(aName.charCodeAt(c));
 			}
-
-			if((startOfMonth == 6 && numDaysInMonth >= 30) || (startOfMonth == 5 && numDaysInMonth == 31))
-			{
-				return 6;
-			}
-
-			return 5;
+			theAptNum *= (Math.random() * 100);
+			return theAptNum;
 		}
 
 		function getDaysInMonth(aDate)
@@ -203,6 +265,11 @@
 			buildDisplay();
 		}
 
+		function removeAppointment_onclick()
+		{
+			appointments.removeAppointment(selectedAppointment);
+		}
+
 		function appointmentName_onEnter(e)
 		{
 			if (e.keyCode == 13)
@@ -224,41 +291,6 @@
 			theDate.setMonth(theDate.getMonth() - 1);
 			theDate.setDate(1);
 			buildDisplay();
-		}
-
-		function displayCalendar(aDate)
-		//builds a calendar from the supplied date
-		{
-
-			//temporary date object to build calendar
-			var workingDate = new Date(aDate.getFullYear(), aDate.getMonth(), aDate.getDate());
-			//sets date to first day of week
-			workingDate.setDate(workingDate.getDate() - workingDate.getDay());
-
-			//builds calendar display
-			for (var r = 0; r < 5; r++)
-			{
-				var rowDiv = document.createElement("div");
-
-				for (var d = 0; d < 7 /*days in week */; d++)
-				{
-					var displayBox = new CalendarDate(workingDate);
-
-					if(workingDate.getMonth() != theDate.getMonth())
-					{
-						displayBox.displayElement.className = "otherMonthDate";
-					}
-					else
-					{
-						displayBox.displayElement.className = "thisMonthDate";
-					}
-
-					rowDiv.appendChild(displayBox.displayElement);
-					workingDate.setDate(workingDate.getDate() + 1);
-				}
-				document.getElementById("calendarDisplay").appendChild(rowDiv);
-			}
-
 		}
 	
 	//Appointment functions
@@ -300,39 +332,65 @@
 		{
 			//display date string
 			document.getElementById("interactionText").innerHTML = (monthToString(aDate.getMonth()) + ", " + aDate.getDate() + " " + aDate.getFullYear());
-			var dayAppointments = appointments.getAppointments(aDate);
+
 			var dateViewBox = document.getElementById("dateView");
 
 			//show reservations list detail
+			var dayAppointments = appointments.getAppointments(aDate);
 			dateViewBox.innerHTML = "";
 			if (dayAppointments == null)
 			{
+				dateViewBox.className = "emptyDate";
 				dateViewBox.appendChild(document.createTextNode("No appointments for this day."));
 			}
 			else
 			//build list of existing appointments
 			{
-				var listOfAppts = document.createElement("ul");
+				dateViewBox.className = "hasAppointments";
 
 				for (var a = 0; a < dayAppointments.length; a++)
 				{
-					var apptName = dayAppointments[a].getApptName();
-					var liElem = document.createElement("li");
-					liElem.appendChild(document.createTextNode(apptName));
-					listOfAppts.appendChild(liElem);
-					dateViewBox.appendChild(listOfAppts);
-				}
-			
+					dateViewBox.appendChild(dayAppointments[a].getAppointmentBox());
+				}			
 			}
 		}
 
-		function showReservationsList(aDate)
-		//show reservations list for supplied date in dateView window
+		function displayCalendar(aDate)
+		//builds a calendar from the supplied date
 		{
-			
+
+			//temporary date object to build calendar
+			var workingDate = new Date(aDate.getFullYear(), aDate.getMonth(), aDate.getDate());
+			//sets date to first day of week
+			workingDate.setDate(workingDate.getDate() - workingDate.getDay());
+
+			//builds calendar display
+			for (var r = 0; r < 5; r++)
+			{
+				var rowDiv = document.createElement("div");
+
+				for (var d = 0; d < 7 /*days in week */; d++)
+				{
+					var displayBox = new CalendarDate(workingDate);
+
+					if(workingDate.getMonth() != theDate.getMonth())
+					{
+						displayBox.displayElement.className = "otherMonthDate";
+					}
+					else
+					{
+						displayBox.displayElement.className = "thisMonthDate";
+					}
+
+					rowDiv.appendChild(displayBox.displayElement);
+					workingDate.setDate(workingDate.getDate() + 1);
+				}
+				document.getElementById("calendarDisplay").appendChild(rowDiv);
+			}
 		}
 	
 		function buildDisplay()
+		//creates the main display
 		{
 			document.getElementById("calendarDisplay").innerHTML = "";
 			displayCalendar(theDate);
@@ -378,12 +436,13 @@
 		</div>
 		<div id="interactionWindow">
 			<h1 id="interactionText">Select a Date.</h1>
-			<div id="dateView" style="overflow:auto"></div>
+			<div id="dateView" ></div>
 			<input type="button" value="New Appointment" onclick="openAppointmentWindow()" style="margin-left:30px"/>
+			<input type="button" value="Remove Appointment" onclick="removeAppointment_onclick()" />
 		</div>
 		<div id="appointmentWindow">
 		<form id="appointmentForm">
-			<label>Your Name: <input type="text" id="appointmentName" onkeypress="appointmentName_onEnter()"/> </label>
+			<label>Your Name: <input type="text" id="appointmentName"/> </label>
 			<input type="button" value="Make Appointment" onclick="makeAppointment()"/>
 		</form>
 	</div>
