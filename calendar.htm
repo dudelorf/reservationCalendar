@@ -48,6 +48,7 @@
 						if (dayAppts[a].getApptNum() == anAppointment.getApptNum())
 						{
 							dayAppts.splice(a,1);
+							selectedAppointment = null;
 							if (dayAppts.length == 0)
 							{
 								delete this[anAppointment.getApptDate()];
@@ -113,8 +114,12 @@
 
 			Appointment.prototype.click = function()
 			{
+				if(selectedAppointment != null)
+				{
+					$(selectedAppointment.displayBox).removeClass("selectAppointment");
+				}
 				selectedAppointment = this;
-				$(this.displayBox).toggleClass("selectAppointment");
+				$(this.displayBox).addClass("selectAppointment");
 			}
 
 			Appointment.prototype.getAppointmentBox = function()
@@ -149,14 +154,18 @@
 			{
 				cBox.appendChild(document.createTextNode("Appts."));
 			}
+			$(cBox).addClass("monthDate");
 
 			this.displayElement = cBox;
 			this.displayElement.addEventListener("click", this, false)
 
 			CalendarDate.prototype.click = function(e)
 			{
-				//function to initialize creation of a reservation
+				//opens display window for date
 				selectedDate = this.selfDate;
+				if (selectedAppointment != null)
+					$(selectedAppointment).removeClass("selectAppointment");
+				selectedAppointment = null;
 				showDateInfo(selectedDate);
 			}
 
@@ -324,6 +333,7 @@
 				buildDisplay();
 				showDateInfo(selectedDate);
 			}
+			return false;
 		}
 
 	//Display functions
@@ -375,11 +385,11 @@
 
 					if(workingDate.getMonth() != theDate.getMonth())
 					{
-						displayBox.displayElement.className = "otherMonthDate";
+						$(displayBox.displayElement).addClass("otherMonthDate");
 					}
 					else
 					{
-						displayBox.displayElement.className = "thisMonthDate";
+						$(displayBox.displayElement).addClass("thisMonthDate");
 					}
 
 					rowDiv.appendChild(displayBox.displayElement);
@@ -398,13 +408,21 @@
 			document.getElementById("headerInfo").innerHTML = dateString;
 		}
 
-
 		function window_onload()
 		//initalization code
 		{
 			theDate.setDate(1);
 			buildDisplay();
-
+			$("#makeAppointmentButton").click(function() {
+				makeAppointment();
+				});
+			$("#appointmentName").keypress(function(event) {
+				if (event.which == 13)
+				{
+					event.preventDefault();
+					makeAppointment();
+				}
+				});
 		}
 
 
@@ -437,13 +455,13 @@
 		<div id="interactionWindow">
 			<h1 id="interactionText">Select a Date.</h1>
 			<div id="dateView" ></div>
-			<input type="button" value="New Appointment" onclick="openAppointmentWindow()" style="margin-left:30px"/>
+			<input type="button" value="New Appointment" onclick="openAppointmentWindow()"/>
 			<input type="button" value="Remove Appointment" onclick="removeAppointment_onclick()" />
 		</div>
 		<div id="appointmentWindow">
 		<form id="appointmentForm">
 			<label>Your Name: <input type="text" id="appointmentName"/> </label>
-			<input type="button" value="Make Appointment" onclick="makeAppointment()"/>
+			<input type="button" id="makeAppointmentButton" value="Make Appointment"/>
 		</form>
 	</div>
 	</div>
