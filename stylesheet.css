@@ -5,6 +5,7 @@
 	border: 2px solid black;
 	width: 920px;
 	height: 465px;
+  font-family: monospace;
 }
 
 #calendar
@@ -12,130 +13,161 @@
 	float: left;
 }
 
-#calendarHeader
-{
-	height: 80px;
-	width: 714px;
-	background-color:teal;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	text-align: center;
-}
-.arrowButton
-{
-	width: 5%;
-	height: 50%;
-	display:inline-block;
-}
-#headerInfo
-{
-	width: 100px;
-	margin: 0px;
-	display:inline-block;
-}
+/*style for calendar header*/
+	#calendarHeader
+	{
+		height: 80px;
+		width: 714px;
+		background-color:teal;
+		border-top-left-radius: 5px;
+		border-top-right-radius: 5px;
+		text-align: center;
+	}
+	.arrowButton
+	{
+		width: 5%;
+		height: 50%;
+		display:inline-block;
+	}
+	#headerInfo
+	{
+		width: 100px;
+		margin: 0px;
+		display:inline-block;
+	}
 
-#dayOfWeekDisplay
-{
-	display: inline-block;
-}
-.dayDisplay
-{
-	width:102px;
-	float: left;
-	color: silver;
-	text-align: center;
-}
+	#dayOfWeekDisplay
+	{
+		margin-top: 5px;
+		display: inline-block;
+	}
+	.dayDisplay
+	{
+		width:102px;
+		float: left;
+		color: silver;
+		text-align: center;
+	}
 
-#calendarDisplay
-{
-	width: 714px;
-}
-.monthDate
-{
-	border: 1px solid black;
-	width: 100px;
-	height: 75px;
-	float:left;
-	font-size: 15px;
-	font-family: arial;
-}
-.thisMonthDate
-{
-	background-color: white;
-}
+/*style for calendar date boxes */
+	#calendarDisplay
+	{
+		width: 714px;
+	}
+	.monthDate
+	{
+		border: 1px solid black;
+		width: 100px;
+		height: 75px;
+		float:left;
+		font-size: 15px;
+		font-family: arial;
+	}
+	.thisMonthDate
+	{
+		background-color: white;
+	}
 
-.otherMonthDate
-{
+	.otherMonthDate
+	{
+		background-color: #F0F0F5;
+	}
+	.calendarDateText
+	{
+		margin-top: 2px;
+		margin-left: 2px;
+	  margin-bottom: 5px;
+		font-weight: bolder;
 
-	background-color: #F0F0F5;
-}
+	}
+	.appointmentBoxesDisplay
+	{
+		width: inherit;
+	}
+	.appointmentBoxes
+	{
+	    border-radius: 3px;
+		width: 12px;
+		height: 12px;
+		background-color: black;
+	    margin-left: 2px;
+	    margin-bottom: 2px;
+		float: left;
+	}
+	.appointmentBoxes:hover
+	{
+		background-color: gray;
+	}
 
-#interactionWindow
-{
-	width:200px;
-	height:463px;
-	background-color: teal;
-	border: 1px solid silver;
-	border-radius: 5px;
-	margin-left: 4px;
-	float: left;
-	text-align: center;
-}
-#interactionWindow input
-{
-	margin-top: 10px;
-}
+/*style for interaction window*/
+	#interactionWindow
+	{
+		width:200px;
+		height:463px;
+		background-color: teal;
+		border: 1px solid silver;
+		border-radius: 5px;
+		margin-left: 4px;
+		float: left;
+		text-align: center;
+	}
 
-#interactionText
-{
-	text-align: center;
- 	font-size: 20px;
-}
-#dateView
-{
-	width:190px;
-	height:300px;
-	overflow: auto;
-	background-color: white;
-	border: 1px solid black;
- 	margin:auto;
- 	overflow: auto;
-}
-.appointmentDisplayBox
-{
-	width:144px;
-	height:50px;
-	margin-top: -16px;
-	margin-left: 20px;
-	border-bottom: 1px solid gray;
-	text-align: left;
-}
-.emptyDate
-{
-	font-family : sans-serif;
-}
-.hasAppointments
-{
+	#interactionText
+	{
+		text-align: center;
+	 	font-size: 18px;
+	}
+	#dateView
+	{
+		width:190px;
+		height:300px;
+		overflow: auto;
+		background-color: white;
+		border: 1px solid black;
+	 	margin:auto;
+	 	overflow: auto;
+	}
+	.appointmentDisplayBox
+	{
+		width:144px;
+		height:50px;
+		margin-left: 20px;
+		border-bottom: 1px solid gray;
+		text-align: left;
+	}
+	.apptDisplayBoxText
+	{
+		margin-top: 2px;
+		margin-left: 2px;
+	}
+	.emptyDate
+	{
+		font-family : sans-serif;
+	}
+	.selectAppointment
+	{
+		background-color: orange;
+	}
+	#interactionWindow input
+	{
+		margin-top: 10px;
+	}
 
-}
-.selectAppointment
-{
-	background-color: orange;
-}
-#appointmentForm
-{
-	position:absolute;
- 	top:70px;
-	text-align:center;
-}
-#appointmentWindow
-{
-	position: relative;
-	left: 180px;
-	top: 100px;
-	background-color: orange;
-	border:2px solid black;
-	width:300px;
-	height:200px;
-	display:none;
-}
+/*style for appointment form popup*/
+	#appointmentForm
+	{
+		position:absolute;
+	 	top:70px;
+		text-align:center;
+	}
+	#appointmentWindow
+	{
+		position: relative;
+		left: 180px;
+		top: 100px;
+		background-color: orange;
+		border:2px solid black;
+		width:300px;
+		height:200px;
+		display:none;
+	}

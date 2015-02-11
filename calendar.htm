@@ -52,9 +52,9 @@
 							if (dayAppts.length == 0)
 							{
 								delete this[anAppointment.getApptDate()];
-								buildDisplay();
 							}
 							showDateInfo(selectedDate);
+							buildDisplay();
 							return;
 						}
 					}
@@ -98,6 +98,7 @@
 			var dBox = document.createElement("div");
 			dBox.className = "appointmentDisplayBox";
 			var theText = document.createElement("p");
+			theText.className = "apptDisplayBoxText";
 			theText.appendChild(document.createTextNode(this.aptName));
 			dBox.appendChild(theText);
 			this.displayBox = dBox;
@@ -149,12 +150,37 @@
 			this.selfDate = new Date(aDate.getFullYear(), aDate.getMonth(), aDate.getDate());
 
 			var cBox = document.createElement("div");
-			cBox.appendChild(document.createTextNode(aDate.getDate()));
+			cBox.className = "monthDate";
+
+			//adds date text to box
+			var dayText = document.createElement("p");
+			dayText.className = "calendarDateText";
+			dayText.appendChild(document.createTextNode(aDate.getDate()));
+			cBox.appendChild(dayText);
+
 			if (appointments.getAppointments(aDate) != null)
 			{
-				cBox.appendChild(document.createTextNode("Appts."));
+				//adds little boxes for appointments to box
+				var theAppointments = document.createElement("div");
+				theAppointments.className = "appointmentBoxesDisplay"
+				for (var b = 0; b < appointments.getAppointments(aDate).length; b++)
+				{
+					var apptBox = document.createElement("div");
+					apptBox.className = "appointmentBoxes";
+					theAppointments.appendChild(apptBox);
+				}
+				cBox.appendChild(theAppointments);
 			}
-			$(cBox).addClass("monthDate");
+
+			if (aDate.getMonth() == theDate.getMonth())
+			{
+				cBox.className += " monthDate";
+			}
+			else
+			{
+				cBox.className += " otherMonthDate";
+			}
+			
 
 			this.displayElement = cBox;
 			this.displayElement.addEventListener("click", this, false)
@@ -164,7 +190,7 @@
 				//opens display window for date
 				selectedDate = this.selfDate;
 				if (selectedAppointment != null)
-					$(selectedAppointment).removeClass("selectAppointment");
+					$(selectedAppointment.displayBox).removeClass("selectAppointment");
 				selectedAppointment = null;
 				showDateInfo(selectedDate);
 			}
