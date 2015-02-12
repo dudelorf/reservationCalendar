@@ -113,14 +113,27 @@
 				}
 			}
 
-			Appointment.prototype.click = function()
+			Appointment.prototype.click = function(e)
 			{
-				if(selectedAppointment != null)
+				if(selectedAppointment == null)
 				{
-					$(selectedAppointment.displayBox).removeClass("selectAppointment");
+					selectedAppointment = this;
+					$(selectedAppointment.displayBox).addClass("selectAppointment");
 				}
-				selectedAppointment = this;
-				$(this.displayBox).addClass("selectAppointment");
+				else
+				{
+					if (selectedAppointment.getApptNum() == this.getApptNum())
+					{
+						$(selectedAppointment.displayBox).removeClass("selectAppointment");
+						selectedAppointment = null;
+					}
+					else
+					{
+						$(selectedAppointment.displayBox).removeClass("selectAppointment");
+						selectedAppointment = this;
+						$(this.displayBox).addClass("selectAppointment");
+					}
+				}
 			}
 
 			Appointment.prototype.getAppointmentBox = function()
@@ -218,7 +231,7 @@
 			{
 				theAptNum += parseInt(aName.charCodeAt(c));
 			}
-			theAptNum *= (Math.random() * 100);
+			theAptNum *= Math.floor((Math.random() * 100));
 			return theAptNum;
 		}
 
