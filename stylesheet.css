@@ -59,7 +59,7 @@
 		border: 1px solid black;
 		width: 100px;
 		height: 75px;
-		float:left;
+		display:inline-block;
 		font-size: 15px;
 		font-family: arial;
 	}
@@ -130,15 +130,17 @@
 	.appointmentDisplayBox
 	{
 		width:144px;
-		height:50px;
-		margin-left: 20px;
+		height:70px;
+		margin:auto;
 		border-bottom: 1px solid gray;
 		text-align: left;
+		display:inline-block;
 	}
 	.apptDisplayBoxText
 	{
-		margin-top: 2px;
+		margin-top: 3px;
 		margin-left: 2px;
+		position: relative;
 	}
 	.emptyDate
 	{
