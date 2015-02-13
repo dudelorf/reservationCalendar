@@ -366,7 +366,7 @@
 			}
 			else
 			{
-				var newAppt = new Appointment(apptName, selectedDate);
+				var newAppt = new Appointment(apptName, selectedDate, apptType);
 				appointments.addAppointment(newAppt);
 				$("#appointmentWindow").fadeOut(300);
 				buildDisplay();
@@ -500,6 +500,13 @@
 		<div id="appointmentWindow">
 		<form id="appointmentForm">
 			<label>Your Name: <input type="text" id="appointmentName"/> </label>
+			<label>Appointment Type: 
+				<select id="appointmentType">
+					<option value="haircut">Haircut</option>
+					<option value="color">Color</option>
+					<option value="shave" />Shave</option>
+				</select>
+			</label>
 			<input type="button" id="makeAppointmentButton" value="Make Appointment"/>
 		</form>
 	</div>
