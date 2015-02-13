@@ -158,13 +158,24 @@
 /*style for appointment form popup*/
 	#appointmentForm
 	{
-		position:absolute;
-	 	top:70px;
-		text-align:center;
+		position: relative;
+		top:15px;
+
+	}
+	#appointmentForm > label
+	{
+		margin: 5px 15px 5px;
+		display:inline-block;
+	}
+	#appointmentForm > input
+	{
+		position:relative;
+		margin: 100px 0px 0px 30px;
+
 	}
 	#appointmentWindow
 	{
-		position: relative;
+		position: absolute;
 		left: 180px;
 		top: 100px;
 		background-color: orange;
