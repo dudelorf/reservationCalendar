@@ -86,7 +86,7 @@
 			}
 		}
 
-		function Appointment(aName, aDate)
+		function Appointment(aName, aDate, aType)
 		//constructor for appointment object
 		{
 			//object to hold appointment information
@@ -94,13 +94,13 @@
 			this.aptMonth = aDate.getMonth();
 			this.aptDate = aDate.getDate();
 			this.aptNumber = generateAptNum(aName);
+			this.aptType = aType;
 
 			var dBox = document.createElement("div");
 			dBox.className = "appointmentDisplayBox";
-			var theText = document.createElement("p");
-			theText.className = "apptDisplayBoxText";
-			theText.appendChild(document.createTextNode(this.aptName));
-			dBox.appendChild(theText);
+			addNewApptText(dBox, this.aptName);
+			addNewApptText(dBox, this.aptType);
+
 			this.displayBox = dBox;
 			this.displayBox.addEventListener("click", this, false);
 
@@ -359,6 +359,15 @@
 		function makeAppointment()
 		//makes new appointment and adds it to appointment book(appointments)
 		{
+			var apptType
+			var typeSelect = document.getElementById("appointmentType")
+			for (var c = 0; c < typeSelect.options.length; c++)
+			{
+				if (typeSelect.options[c].selected)
+				{
+					apptType = typeSelect.options[c].value;
+				}
+			}
 			var apptName = document.getElementById("appointmentName").value;
 			if (apptName == "")
 			{
@@ -375,6 +384,13 @@
 			return false;
 		}
 
+		function addNewApptText(element, newText)
+		{
+			var theText = document.createElement("p");
+			theText.className = "apptDisplayBoxText"
+			theText.appendChild(document.createTextNode(newText));
+			element.appendChild(theText);
+		}
 	//Display functions
 		function showDateInfo(aDate)
 		//shows reservations and info for selected date
@@ -502,9 +518,9 @@
 			<label>Your Name: <input type="text" id="appointmentName"/> </label>
 			<label>Appointment Type: 
 				<select id="appointmentType">
-					<option value="haircut">Haircut</option>
-					<option value="color">Color</option>
-					<option value="shave" />Shave</option>
+					<option value="Haircut">Haircut</option>
+					<option value="Color">Color</option>
+					<option value="Shave" />Shave</option>
 				</select>
 			</label>
 			<input type="button" id="makeAppointmentButton" value="Make Appointment"/>
