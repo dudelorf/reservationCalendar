@@ -96,12 +96,8 @@
 			this.aptNumber = generateAptNum(aName);
 			this.aptType = aType;
 
-			var dBox = document.createElement("div");
-			dBox.className = "appointmentDisplayBox";
-			addNewApptText(dBox, this.aptName);
-			addNewApptText(dBox, this.aptType);
-
-			this.displayBox = dBox;
+			this.displayBox = document.createElement("div");
+			this.displayBox.className = "appointmentDisplayBox";
 			this.displayBox.addEventListener("click", this, false);
 
 			Appointment.prototype.handleEvent = function(e)
@@ -135,9 +131,15 @@
 					}
 				}
 			}
+			Appointment.prototype.clearAppointmentBox = function()
+			{
+				this.displayBox.innerHTML = "";
+			}
 
 			Appointment.prototype.getAppointmentBox = function()
 			{
+				addNewApptText(this.displayBox, this.aptName);
+				addNewApptText(this.displayBox, this.aptType);
 				return this.displayBox;
 			}
 
@@ -415,6 +417,7 @@
 
 				for (var a = 0; a < dayAppointments.length; a++)
 				{
+					dayAppointments[a].clearAppointmentBox();
 					dateViewBox.appendChild(dayAppointments[a].getAppointmentBox());
 				}			
 			}
@@ -479,7 +482,69 @@
 				}
 				});
 		}
+		function doAjaxThing()
+		{
+			HttpRequest("savedAppointments.txt");
 
+		}
+
+		function HttpRequest(sUrl)
+		{
+			this.request = this.createXmlHttpRequest();
+			this.request.open("GET", sUrl, true);
+
+			var tempRequest = this.request;
+			function request_readystatechange()
+			{
+				if (tempRequest.readyState == 4)
+				{
+					if (tempRequest.status == 200)
+					{
+						alert(tempRequest.responseText);
+					}
+					else
+					{
+						alert("An error occured trying to contact the server.");
+					}
+				}
+			}
+			this.request.onreadystatechange = request_readystatechange;
+
+			HttpRequest.prototype.createXmlHttpRequest = function()
+			{
+				if (window.createXmlHttpRequest)
+				{
+					var oHttp = new XMLHttpRequest();
+					return oHttp;
+				}
+				else if (window.ActiveXObject)
+				{
+					var versions = 
+					[
+						"MSXML2.XmlHttp.6.0",
+						"MSXML2.XmlHttp.3.0"
+					];
+					for (var i = 0; i < versions.length; i++)
+					{
+						try
+						{
+							var oHttp = new ActiveXObject(versions[i]);
+							return oHttp;
+						}
+						catch (error)
+						{
+							//do nothing
+						}
+					}
+				}
+				return null;
+			}
+
+			HttpRequest.prototype.send = function()
+			{
+				this.request.send(null);
+			}
+		}
 
 	</script>
 </head>
@@ -512,6 +577,7 @@
 			<div id="dateView" ></div>
 			<input type="button" value="New Appointment" onclick="openAppointmentWindow()"/>
 			<input type="button" value="Remove Appointment" onclick="removeAppointment_onclick()" />
+			<input type="button" value="XML baby!" onclick="doAjaxThing()" />
 		</div>
 		<div id="appointmentWindow">
 		<form id="appointmentForm">
